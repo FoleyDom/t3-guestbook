@@ -1,28 +1,19 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 
-export const guestbookRouter = createTRPCRouter({
-  postMessage: publicProcedure
-    .input(z.object({ text: z.string(), menssage: z.string() }))
-    .query(({ctx, input }) => {
-      try {
-        await ctx.prisma.guestbook.create({
-            data: {
-                name: input.text,
-                message: input.menssage
-            },
-        }),
-    } catch (e) {
-        console.log(e)
-    }
-    }),
+export const guestbookeRouter = createTRPCRouter({
+	hello: protectedProcedure.input(z.object({ text: z.string() })).query(({ input }) => {
+		return {
+			greeting: `Hello ${input.text}`,
+		}
+	}),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
+	getAll: publicProcedure.query(({ ctx }) => {
+		return ctx.prisma.example.findMany()
+	}),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
-});
+	getSecretMessage: protectedProcedure.query(() => {
+		return 'you can now see this secret message!'
+	}),
+})
