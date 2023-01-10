@@ -26,16 +26,16 @@ const Form = () => {
 	const [message, setMessage] = useState('')
 	const utils = api.useContext()
 	const postMessage = api.guestbook.postMessage.useMutation({
-		onMutate: () => {
-			utils.guestbook.getAll.cancel()
+		onMutate: async () => {
+			await utils.guestbook.getAll.cancel()
 			const optimisticUpdate = utils.guestbook.getAll.getData()
 
 			if (optimisticUpdate) {
 				utils.guestbook.getAll.setData(optimisticUpdate)
 			}
 		},
-		onSettled: () => {
-			utils.guestbook.getAll.invalidate()
+		onSettled: async () => {
+			await utils.guestbook.getAll.invalidate()
 		},
 	})
 
@@ -93,8 +93,8 @@ const Home = () => {
 
 							<button
 								type="button"
-								class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-								onClick={() => signOut()}
+								className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+								onClick={() => void signOut()}
 							>
 								Logout
 							</button>
@@ -106,8 +106,8 @@ const Home = () => {
 					) : (
 						<button
 							type="button"
-							class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-							onClick={() => signIn('discord')}
+							className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+							onClick={() => void signIn('discord')}
 						>
 							Login with Discord
 						</button>
