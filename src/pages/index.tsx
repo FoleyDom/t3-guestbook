@@ -31,7 +31,7 @@ const Form = () => {
 			const optimisticUpdate = utils.guestbook.getAll.getData()
 
 			if (optimisticUpdate) {
-				utils.guestbook.getAll.setData(optimisticUpdate)
+				utils.guestbook.getAll.setData(optimisticUpdate, undefined)
 			}
 		},
 		onSettled: async () => {
