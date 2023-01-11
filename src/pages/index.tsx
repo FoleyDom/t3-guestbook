@@ -1,11 +1,35 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { api } from '../utils/api'
+import Footer from '../components/Footer'
+import { PrismaClient } from '@prisma/client'
 
 const Messages = () => {
 	const { data: messages, isLoading } = api.guestbook.getAll.useQuery()
+	const { data: session } = useSession()
+	const [d, setD] = useState('')
+	const utils = api.useContext()
 
 	if (isLoading) return <div>Fetching messages...</div>
+
+	//make sure user is logged in
+	//make sure user is the author of the message
+	//get id of message to delete
+	//delete message
+
+	const deleteMessage = api.guestbook.deleteMessage.useMutation({
+		onMutate: async () => {
+			await utils.guestbook.getAll.cancel()
+			const optimisticUpdate = utils.guestbook.getAll.getData()
+
+			if (optimisticUpdate) {
+				utils.guestbook.getAll.setData(undefined, optimisticUpdate)
+			}
+		},
+		onSettled: async () => {
+			await utils.guestbook.getAll.invalidate()
+		},
+	})
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -14,6 +38,21 @@ const Messages = () => {
 					<div key={index}>
 						<p>{msg.message}</p>
 						<span>- {msg.name}</span>
+						<button
+							onClick={(e) => {
+								e.preventDefault()
+
+								if (session !== null) {
+									setD('')
+									console.log(`deleted message ${d}`)
+									deleteMessage.mutate({
+										id: session.user?.id,
+									})
+								}
+							}}
+						>
+							Delete
+						</button>
 					</div>
 				)
 			})}
@@ -79,45 +118,48 @@ const Home = () => {
 	}
 
 	return (
-		<main className="flex flex-col items-center">
-			<h1 className="text-3xl pt-4">Guestbook</h1>
-			<p>
-				Project using <code>create-t3-app</code>
-			</p>
+		<>
+			<main className="flex flex-col items-center">
+				<h1 className="text-3xl pt-4">Guestbook</h1>
+				<p>
+					Project using <code>create-t3-app</code>
+				</p>
 
-			<div className="pt-10">
-				<div>
-					{session ? (
-						<>
-							<p>hi {session.user?.name}</p>
+				<div className="pt-10">
+					<div>
+						{session ? (
+							<>
+								<p>hi {session.user?.name}</p>
 
+								<button
+									type="button"
+									className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+									onClick={() => void signOut()}
+								>
+									Logout
+								</button>
+
+								<div className="pt-6">
+									<Form />
+								</div>
+							</>
+						) : (
 							<button
 								type="button"
 								className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-								onClick={() => void signOut()}
+								onClick={() => void signIn('discord')}
 							>
-								Logout
+								Login with Discord
 							</button>
-
-							<div className="pt-6">
-								<Form />
-							</div>
-						</>
-					) : (
-						<button
-							type="button"
-							className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
-							onClick={() => void signIn('discord')}
-						>
-							Login with Discord
-						</button>
-					)}
-					<div className="pt-10">
-						<Messages />
+						)}
+						<div className="pt-10">
+							<Messages />
+						</div>
 					</div>
 				</div>
-			</div>
-		</main>
+			</main>
+			<Footer />
+		</>
 	)
 }
 

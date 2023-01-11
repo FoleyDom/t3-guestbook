@@ -36,4 +36,15 @@ export const guestbookRouter = createTRPCRouter({
 				console.log(error)
 			}
 		}),
+	deleteMessage: protectedProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
+		try {
+			await ctx.prisma.guestbook.delete({
+				where: {
+					id: input.toFixed(),
+				},
+			})
+		} catch (error) {
+			console.log(error)
+		}
+	}),
 })
