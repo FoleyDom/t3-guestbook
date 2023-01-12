@@ -118,7 +118,7 @@ const Home = () => {
 
   return (
     <>
-      <main className="flex flex-col items-center">
+      <main className="flex flex-col items-center mb-auto h-screen ">
         <h1 className="text-3xl pt-4">Guestbook</h1>
         <p>
           Project using <code>create-t3-app</code>
