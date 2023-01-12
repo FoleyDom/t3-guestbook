@@ -5,6 +5,10 @@ import Footer from '../components/Footer'
 
 const Messages = () => {
   const { data: messages, isLoading } = api.guestbook.getAll.useQuery()
+  //make sure user is logged in
+  //make sure user is the author of the message
+  //get id of message to delete
+  //delete message
   const deleteMessage = api.guestbook.deleteMessage.useMutation({
     onMutate: async () => {
       await utils.guestbook.getAll.cancel()
@@ -23,11 +27,6 @@ const Messages = () => {
 
   if (isLoading) return <div>Fetching messages...</div>
 
-  //make sure user is logged in
-  //make sure user is the author of the message
-  //get id of message to delete
-  //delete message
-
   return (
     <div className="flex flex-col gap-4">
       {messages?.map((msg, index) => {
@@ -41,6 +40,9 @@ const Messages = () => {
                   className="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out ml-5"
                   onClick={(event) => {
                     event.preventDefault()
+
+                    // if (session.user?.id !== msg.id)
+                    //   return alert('You are not the author of this message')
 
                     deleteMessage.mutate({
                       id: msg.id,
@@ -83,11 +85,13 @@ const Form = () => {
       onSubmit={(event) => {
         event.preventDefault()
 
+        if (message === '') return alert('Message is empty')
+
         if (session !== null) {
           postMessage.mutate({
             name: session.user?.name as string,
             message,
-            id: session.user?.id as string,
+            //id: session.user?.id as string,
           })
         }
 
