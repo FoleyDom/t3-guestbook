@@ -35,18 +35,23 @@ const Messages = () => {
           <div key={index}>
             <p>{msg.message}</p>
             <span>- {msg.name}</span>
-            <button
-              onClick={(event) => {
-                event.preventDefault()
+            {session ? (
+              <>
+                <button
+                  className="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out ml-5"
+                  onClick={(event) => {
+                    event.preventDefault()
 
-                if (session !== null) {
-                  deleteMessage.mutate({
-                    id: msg.id,
-                  })
-                }
-              }}>
-              Delete
-            </button>
+                    deleteMessage.mutate({
+                      id: msg.id,
+                    })
+                  }}>
+                  Delete
+                </button>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         )
       })}
@@ -82,6 +87,7 @@ const Form = () => {
           postMessage.mutate({
             name: session.user?.name as string,
             message,
+            id: session.user?.id as string,
           })
         }
 
