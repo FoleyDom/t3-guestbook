@@ -36,7 +36,7 @@ const Messages = () => {
             <p>{msg.message}</p>
             <span>- {msg.name}</span>
             <button
-              onSubmit={(event) => {
+              onClick={(event) => {
                 event.preventDefault()
 
                 if (session !== null) {
