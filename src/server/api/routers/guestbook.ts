@@ -21,7 +21,7 @@ export const guestbookRouter = createTRPCRouter({
   postMessage: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
+        //id: z.string(),
         name: z.string(),
         message: z.string(),
       }),
